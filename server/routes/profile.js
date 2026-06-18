@@ -27,7 +27,6 @@ router.post('/', auth, async (req, res) => {
         
         const profile = new Profile(profileData);
         await profile.save();
-        res.json(profile);
         res.status(201).json(profile);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });      

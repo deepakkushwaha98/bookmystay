@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
         await user.save();
 
         const userProfile = new Profile({
-            user: user._id,
+            user: user.id,
             bio: '',
             phone: '',
             dob: '',
@@ -34,11 +34,13 @@ router.post('/register', async (req, res) => {
         await userProfile.save();
 
 
-        const token = jwt.sign({userId:user.id}, 
-            process.env.JWT_SECRET, 
-            {expiresIn:'1d'});
+        const token = jwt.sign(
+            { id: user.id, isHost: user.isHost },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
 
-        res.status(201).json({ token , user});
+        res.status(201).json({ token, user });
     } catch (err) {
         console.error('Register error:', err);
         res.status(500).json({
@@ -76,15 +78,19 @@ router.post('/login', async (req, res) => {
             await userProfile.save();
         }
 
-        const token = jwt.sign({ userId: user.id , isHost: user.isHost}, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign(
+            { id: user.id, isHost: user.isHost },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
 
         res.json({
-          token,
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          isHost: user.isHost
-       });
+            token,
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            isHost: user.isHost
+        });
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).json({
